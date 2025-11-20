@@ -1,0 +1,70 @@
+Sistema de roteirização para 25–28/11/2025 com dados fictícios.
+
+Abaixo está um notebook completo (células Python) para simular pedidos, 
+modelar cubagem e otimizar rotas diárias com base em geolocalização, 
+respeitando capacidades dos veículos e janelas de atendimento. 
+Mantive todas as premissas que combinamos.
+
+Estrutura do notebook proposta
+1. Configuração e geração de dados fictícios
+Parâmetros da frota: veículos com capacidades (ex.: 10 m³, 18 m³, 24 m³) e cargas (ex.: 2 t, 4 t, 6 t).
+
+Catálogo de SKUs: volumes/pesos por unidade e restrições de empilhamento.
+
+Clientes: ~80–150 clientes com lat/long plausíveis de Fortaleza/Região Metropolitana, janelas de dias (ter–sex), e horários.
+
+Pedidos por dia: demanda simulada para 25–28/11/2025, respeitando dias de recebimento.
+
+Depósito: coordenadas do CD.
+
+2. Modelagem de cubagem e restrições
+Conversão de pedidos em volume/peso: soma por cliente/dia.
+
+Validação de carga por veículo: não exceder m³ e kg; aplicar coeficiente de empilhamento seguro.
+
+3. Cálculo de distâncias/tempos
+Matriz de custo: Haversine entre pontos, com fator de rua (ex.: 1,25) e velocidade média para tempo.
+
+Penalidades de janela: penalizar chegadas fora do horário.
+
+4. Otimização de rotas por dia
+Construção de rotas: heurística de savings/Clarke‑Wright ajustada a capacidade; refinamento com 2‑opt.
+
+Alocação de veículos: atribuir rotas respeitando capacidade e janelas.
+
+Critérios de parada: máximo de visitas/tempo por rota.
+
+5. Resultados e indicadores
+Resumo por dia e veículo: distância total, tempo estimado, carga utilizada (m³/kg), número de paradas.
+
+Mapas simples: plot de rotas sobre coordenadas.
+
+Alertas: pedidos não atendidos, excedência de capacidade, violações de janelas.
+
+6. Planejamento rolling (D+1)
+Seleção automática do “dia seguinte”: gerar/otimizar apenas o próximo dia.
+
+Recalcular com alterações: simular inclusão/remoção de pedidos e reotimizar.
+
+Assunções iniciais sugeridas (ajustáveis)
+Frota: 6 veículos (2 pequenos, 2 médios, 2 grandes).
+
+Capacidade:
+
+Pequeno: 10 m³ / 2.000 kg
+
+Médio: 18 m³ / 4.000 kg
+
+Grande: 24 m³ / 6.000 kg
+
+Catálogo: PET 2 L (2,2 kg, 0,003 m³), caixa 12×1 L (13,2 kg, 0,018 m³), bombona 20 L (21,5 kg, 0,035 m³).
+
+Empilhamento: fator de eficiência volumétrica 0,9.
+
+Tempo de operação: 08:00–17:00; serviço médio por cliente 10 min.
+
+Velocidade média urbana: 25 km/h; fator de rua 1,25 sobre Haversine.
+
+CD: coordenadas em Fortaleza (ex.: lat/long fictícias).
+
+Clientes: cada um com 1–2 dias preferidos de recebimento dentro de ter–sex.
